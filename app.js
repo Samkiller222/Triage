@@ -304,6 +304,7 @@
       if (state === "overdue") overdue.push(e);
       else if (state === "dueToday") dueToday.push(e);
     });
+    overdue.sort(function (a, b) { return (a.followUpDate || "").localeCompare(b.followUpDate || ""); });
 
     function box(list, cls, title) {
       if (!list.length) return "";
@@ -333,14 +334,14 @@
     var risk = filterRisk.value;
     var status = filterStatus.value;
     var mdt = filterMDT.value;
-    var alert = filterAlert.value;
+    var alertFilter = filterAlert.value;
 
     var filtered = entries.filter(function (e) {
       if (tp && e.timepoint !== tp) return false;
       if (risk && e.riskCategoryTriage !== risk) return false;
       if (status && e.status !== status) return false;
       if (mdt && e.requiresMDT !== mdt) return false;
-      if (alert && alertState(e) !== alert) return false;
+      if (alertFilter && alertState(e) !== alertFilter) return false;
       if (q) {
         var hay = [e.firstName, e.surname, e.idNumber, e.mobile, e.email].join(" ").toLowerCase();
         if (hay.indexOf(q) === -1) return false;
