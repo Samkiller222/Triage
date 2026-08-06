@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perinatal Triage Log</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="app-header">
+  <button id="menuToggle" class="burger" aria-label="Open menu" aria-expanded="false" aria-controls="sideNav">
+    <span></span><span></span><span></span>
+  </button>
+  <h1 class="app-title">Perinatal Triage Log</h1>
+  <button id="newEntryBtn" class="btn btn-primary btn-small" type="button">+ New</button>
+</header>
+
+<div id="navOverlay" class="nav-overlay hidden"></div>
+
+<nav id="sideNav" class="side-nav" aria-hidden="true">
+  <div class="side-nav-header">
+    <span>Menu</span>
+    <button id="closeNav" class="close-btn" aria-label="Close menu">&times;</button>
+  </div>
+  <ul>
+    <li><button class="nav-link" data-view="records">📋 View Records</button></li>
+    <li><button class="nav-link" data-view="form">📝 New Entry</button></li>
+    <li class="nav-divider"></li>
+    <li><button id="exportCsvBtn" class="nav-link">⬇️ Export as CSV</button></li>
+    <li><button id="exportXlsxBtn" class="nav-link">⬇️ Export as Excel (.xlsx)</button></li>
+    <li class="nav-divider"></li>
+    <li><button id="clearDataBtn" class="nav-link danger">🗑️ Clear All Data</button></li>
+  </ul>
+  <p class="side-nav-footer">Data is stored only on this device.</p>
+</nav>
+
+<main id="app">
+
+  <section id="view-records" class="view">
+    <div class="toolbar">
+      <input type="search" id="searchInput" placeholder="Search name, surname, ID, mobile, email…">
+      <select id="filterTimepoint">
+        <option value="">All timepoints</option>
+        <option value="T1">T1</option>
+        <option value="T2">T2</option>
+        <option value="T3">T3</option>
+        <option value="T4">T4</option>
+        <option value="T5">T5</option>
+      </select>
+      <select id="filterRisk">
+        <option value="">All risk categories</option>
+        <option value="A">A</option>
+        <option value="B">B</option>
+        <option value="C">C</option>
+        <option value="Triage Failed">Triage Failed</option>
+      </select>
+    </div>
+    <p id="recordCount" class="record-count"></p>
+    <div id="recordsList" class="records-list"></div>
+    <p id="emptyState" class="empty-state hidden">No records yet. Tap <strong>+ New</strong> to add your first triage entry.</p>
+  </section>
+
+  <section id="view-form" class="view hidden">
+    <h2 id="formTitle">New Triage Entry</h2>
+    <form id="triageForm"></form>
+  </section>
+
+  <section id="view-detail" class="view hidden">
+    <div class="detail-header">
+      <button id="backToRecords" class="btn btn-ghost btn-small">&larr; Back</button>
+      <div class="detail-actions">
+        <button id="editRecordBtn" class="btn btn-primary btn-small">Amend</button>
+        <button id="deleteRecordBtn" class="btn btn-danger btn-small">Delete</button>
+      </div>
+    </div>
+    <h2 id="detailTitle"></h2>
+    <div id="detailBody" class="detail-body"></div>
+  </section>
+
+</main>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script src="app.js" defer></script>
+</body>
+</html>
