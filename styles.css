@@ -241,12 +241,57 @@ input:focus, select:focus, textarea:focus {
 .chip.risk-C { background: #e6f4ea; color: #1e7a34; border-color: transparent; }
 .chip.status-active { background: #e6f4ea; color: #1e7a34; border-color: transparent; font-weight: 600; }
 .chip.status-closed { background: var(--color-bg); color: var(--color-text-muted); border-color: var(--color-border); }
+.chip.alert-overdue { background: var(--color-danger-bg); color: var(--color-danger); border-color: transparent; font-weight: 600; }
+.chip.alert-due-today { background: #fff4e0; color: #9a6300; border-color: transparent; font-weight: 600; }
 
 @media (prefers-color-scheme: dark) {
   .chip.risk-A { background: #3a1f1e; color: #ff8a80; }
   .chip.risk-B { background: #3a2f14; color: #ffcc66; }
   .chip.risk-C { background: #16321f; color: #7be08f; }
   .chip.status-active { background: #16321f; color: #7be08f; }
+  .chip.alert-overdue { background: #3a1f1e; color: #ff8a80; }
+  .chip.alert-due-today { background: #3a2f14; color: #ffcc66; }
+}
+
+/* Notifications */
+.notifications {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+.notice-box {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.notice-title {
+  padding: .55rem .75rem;
+  font-weight: 700;
+  font-size: .82rem;
+}
+.notice-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-top: 1px solid rgba(0,0,0,.08);
+  padding: .55rem .75rem;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.notice-item:hover { background: rgba(0,0,0,.05); }
+.notice-date { font-size: .78rem; opacity: .85; white-space: nowrap; }
+.notice-overdue { background: var(--color-danger-bg); color: var(--color-danger); }
+.notice-due-today { background: #fff4e0; color: #9a6300; }
+
+@media (prefers-color-scheme: dark) {
+  .notice-overdue { background: #3a1f1e; color: #ff8a80; }
+  .notice-due-today { background: #3a2f14; color: #ffcc66; }
+  .notice-item:hover { background: rgba(255,255,255,.06); }
 }
 
 .empty-state {

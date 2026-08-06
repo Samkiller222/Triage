@@ -47,7 +47,8 @@
 
     { key: "status", label: "Status", type: "select", options: ["Active", "Closed"], section: "Status" },
 
-    { key: "notes", label: "Notes", type: "textarea", section: "Notes" }
+    { key: "notes", label: "Notes", type: "textarea", section: "Notes" },
+    { key: "followUpDate", label: "Follow-up Date", type: "date", section: "Notes" }
   ];
 
   var SECTIONS = [];
@@ -272,8 +273,11 @@
   var filterTimepoint = document.getElementById("filterTimepoint");
   var filterRisk = document.getElementById("filterRisk");
   var filterStatus = document.getElementById("filterStatus");
+  var filterMDT = document.getElementById("filterMDT");
+  var filterAlert = document.getElementById("filterAlert");
+  var notificationsBox = document.getElementById("notificationsBox");
 
-  [searchInput, filterTimepoint, filterRisk, filterStatus].forEach(function (el) {
+  [searchInput, filterTimepoint, filterRisk, filterStatus, filterMDT, filterAlert].forEach(function (el) {
     el.addEventListener("input", renderRecords);
     el.addEventListener("change", renderRecords);
   });
@@ -285,16 +289,58 @@
     return "chip";
   }
 
+  function alertState(e) {
+    if (!e.followUpDate || e.status === "Closed") return null;
+    var today = todayStamp();
+    if (e.followUpDate < today) return "overdue";
+    if (e.followUpDate === today) return "dueToday";
+    return null;
+  }
+
+  function renderNotifications() {
+    var overdue = [], dueToday = [];
+    entries.forEach(function (e) {
+      var state = alertState(e);
+      if (state === "overdue") overdue.push(e);
+      else if (state === "dueToday") dueToday.push(e);
+    });
+
+    function box(list, cls, title) {
+      if (!list.length) return "";
+      var html = '<div class="notice-box ' + cls + '"><div class="notice-title">' + escapeHtml(title) + " (" + list.length + ")</div>";
+      list.forEach(function (e) {
+        var name = escapeHtml(((e.firstName || "") + " " + (e.surname || "")).trim() || "(no name)");
+        html += '<button type="button" class="notice-item" data-id="' + e.id + '"><span>' + name + '</span><span class="notice-date">' + escapeHtml(e.followUpDate) + "</span></button>";
+      });
+      html += "</div>";
+      return html;
+    }
+
+    var html = box(overdue, "notice-overdue", "⚠ Overdue follow-up") + box(dueToday, "notice-due-today", "🔔 Due today");
+    notificationsBox.innerHTML = html;
+    notificationsBox.classList.toggle("hidden", !html);
+    notificationsBox.querySelectorAll(".notice-item").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        openDetail(btn.getAttribute("data-id"));
+      });
+    });
+  }
+
   function renderRecords() {
+    renderNotifications();
     var q = searchInput.value.trim().toLowerCase();
     var tp = filterTimepoint.value;
     var risk = filterRisk.value;
     var status = filterStatus.value;
+    var mdt = filterMDT.value;
+    var alert = filterAlert.value;
 
     var filtered = entries.filter(function (e) {
       if (tp && e.timepoint !== tp) return false;
       if (risk && e.riskCategoryTriage !== risk) return false;
       if (status && e.status !== status) return false;
+      if (mdt && e.requiresMDT !== mdt) return false;
+      if (alert && alertState(e) !== alert) return false;
       if (q) {
         var hay = [e.firstName, e.surname, e.idNumber, e.mobile, e.email].join(" ").toLowerCase();
         if (hay.indexOf(q) === -1) return false;
@@ -319,6 +365,9 @@
       if (e.riskCategoryTriage) chips += '<span class="' + riskChipClass(e.riskCategoryTriage) + '">Risk ' + escapeHtml(e.riskCategoryTriage) + "</span>";
       if (e.triageOutcome) chips += '<span class="chip">' + escapeHtml(e.triageOutcome) + "</span>";
       if (e.status) chips += '<span class="chip status-' + escapeHtml(e.status.toLowerCase()) + '">' + escapeHtml(e.status) + "</span>";
+      var alertSt = alertState(e);
+      if (alertSt === "overdue") chips += '<span class="chip alert-overdue">Overdue</span>';
+      else if (alertSt === "dueToday") chips += '<span class="chip alert-due-today">Due today</span>';
       return '<div class="record-card" data-id="' + e.id + '">' +
         '<div class="record-card-top"><span class="record-card-name">' + name + '</span>' +
         '<span class="record-card-date">' + escapeHtml(e.dateOfReferral || "") + "</span></div>" +

@@ -38,6 +38,7 @@
 <main id="app">
 
   <section id="view-records" class="view">
+    <div id="notificationsBox" class="notifications hidden"></div>
     <div class="toolbar">
       <input type="search" id="searchInput" placeholder="Search name, surname, ID, mobile, email…">
       <select id="filterTimepoint">
@@ -59,6 +60,16 @@
         <option value="">All statuses</option>
         <option value="Active">Active</option>
         <option value="Closed">Closed</option>
+      </select>
+      <select id="filterMDT">
+        <option value="">Requires MDT: All</option>
+        <option value="Yes">Requires MDT: Yes</option>
+        <option value="No">Requires MDT: No</option>
+      </select>
+      <select id="filterAlert">
+        <option value="">All alert dates</option>
+        <option value="overdue">Overdue</option>
+        <option value="dueToday">Due today</option>
       </select>
     </div>
     <p id="recordCount" class="record-count"></p>
