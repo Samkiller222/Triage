@@ -53,6 +53,13 @@
     if (SECTIONS.indexOf(f.section) === -1) SECTIONS.push(f.section);
   });
 
+  var RISK_SECTION_MAP = {
+    A: "Category A - Follow-up Calls",
+    B: "Category B - In-Person Assessment",
+    C: "Category C - Emergency Referral"
+  };
+  var CONDITIONAL_SECTIONS = ["Category A - Follow-up Calls", "Category B - In-Person Assessment", "Category C - Emergency Referral"];
+
   // ---------- Storage ----------
 
   function loadEntries() {
@@ -150,7 +157,7 @@
   function buildForm() {
     var html = "";
     SECTIONS.forEach(function (section) {
-      html += '<div class="form-section"><h3>' + escapeHtml(section) + "</h3>";
+      html += '<div class="form-section" data-section="' + escapeHtml(section) + '"><h3>' + escapeHtml(section) + "</h3>";
       FIELDS.filter(function (f) { return f.section === section; }).forEach(function (f) {
         html += '<div class="field"><label for="f_' + f.key + '">' + escapeHtml(f.label) +
           (f.required ? ' <span class="req">*</span>' : "") + "</label>";
@@ -178,6 +185,18 @@
       renderRecords();
       showView("records");
     });
+    var riskEl = document.getElementById("f_riskCategoryTriage");
+    if (riskEl) riskEl.addEventListener("change", updateConditionalSections);
+    updateConditionalSections();
+  }
+
+  function updateConditionalSections() {
+    var riskEl = document.getElementById("f_riskCategoryTriage");
+    var showSection = riskEl ? RISK_SECTION_MAP[riskEl.value] : null;
+    CONDITIONAL_SECTIONS.forEach(function (sectionName) {
+      var el = formEl.querySelector('[data-section="' + CSS.escape(sectionName) + '"]');
+      if (el) el.classList.toggle("hidden", sectionName !== showSection);
+    });
   }
 
   function startNewEntry() {
@@ -200,6 +219,7 @@
       var el = document.getElementById("f_" + f.key);
       if (el && entry[f.key] != null) el.value = entry[f.key];
     });
+    updateConditionalSections();
     showView("form");
   }
 
