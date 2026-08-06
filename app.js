@@ -43,7 +43,9 @@
 
     { key: "catCDateTime", label: "Category C - Date & Time of AE Referral", type: "datetime-local", section: "Category C - Emergency Referral" },
     { key: "catCHandover", label: "Category C - Handover to MDH emergency/Psychiatry - Specify", type: "text", section: "Category C - Emergency Referral" },
-    { key: "catCOutcome", label: "Category C - Outcome Post AE review", type: "select", options: ["Admission", "Discharge with Perinatal CMHT FU", "Discharged but refused perinatal CMHT", "CRHT"], section: "Category C - Emergency Referral" }
+    { key: "catCOutcome", label: "Category C - Outcome Post AE review", type: "select", options: ["Admission", "Discharge with Perinatal CMHT FU", "Discharged but refused perinatal CMHT", "CRHT"], section: "Category C - Emergency Referral" },
+
+    { key: "status", label: "Status", type: "select", options: ["Active", "Closed"], section: "Status" }
   ];
 
   var SECTIONS = [];
@@ -183,6 +185,8 @@
     formTitle.textContent = "New Triage Entry";
     buildForm();
     formEl.reset();
+    var statusEl = document.getElementById("f_status");
+    if (statusEl) statusEl.value = "Active";
     showView("form");
   }
 
@@ -286,6 +290,7 @@
       if (e.timepoint) chips += '<span class="chip">' + escapeHtml(e.timepoint) + "</span>";
       if (e.riskCategoryTriage) chips += '<span class="' + riskChipClass(e.riskCategoryTriage) + '">Risk ' + escapeHtml(e.riskCategoryTriage) + "</span>";
       if (e.triageOutcome) chips += '<span class="chip">' + escapeHtml(e.triageOutcome) + "</span>";
+      if (e.status) chips += '<span class="chip status-' + escapeHtml(e.status.toLowerCase()) + '">' + escapeHtml(e.status) + "</span>";
       return '<div class="record-card" data-id="' + e.id + '">' +
         '<div class="record-card-top"><span class="record-card-name">' + name + '</span>' +
         '<span class="record-card-date">' + escapeHtml(e.dateOfReferral || "") + "</span></div>" +
