@@ -4,9 +4,11 @@ A mobile-friendly web app for filling out and amending perinatal triage records,
 
 ## Features
 
-- **New Entry** form covering every column from the original spreadsheet (referral details, Whooley/EPDS/GAD-7/RDAS scores, triage outcome, and Category A/B/C follow-up).
+- **New Entry** form covering every column from the original spreadsheet (referral details, Whooley/EPDS/GAD-7/RDAS scores, triage outcome, and Category A/B/C follow-up), plus a Status (Active/Closed), Notes, and Follow-up Date field.
+- **Category A/B/C sections** show or hide automatically based on the selected "Risk Category after Triage".
 - **Burger menu** for navigating between viewing records and adding a new entry.
-- **Records list** with search (name, surname, ID, mobile, email) and filters (perinatal timepoint, risk category). Tap a record to see the full detail view.
+- **Records list** with search (name, surname, ID, mobile, email) and filters (perinatal timepoint, risk category, status, Requires MDT Discussion, alert date). Tap a record to see the full detail view.
+- **Follow-up alerts** — records whose Follow-up Date is today or in the past (and not Closed) surface as clickable "Due today" / "Overdue" notifications at the top of the records list, taking you straight to that record.
 - **Amend** any record after the fact — useful since follow-up calls, MDT discussions, and AE referrals happen days after the initial triage.
 - **Export** all records as CSV (always available) or Excel `.xlsx` (requires an internet connection to load the export library).
 - **Delete** individual records, or clear all data from the device.
