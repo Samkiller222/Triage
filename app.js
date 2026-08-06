@@ -45,7 +45,9 @@
     { key: "catCHandover", label: "Category C - Handover to MDH emergency/Psychiatry - Specify", type: "text", section: "Category C - Emergency Referral" },
     { key: "catCOutcome", label: "Category C - Outcome Post AE review", type: "select", options: ["Admission", "Discharge with Perinatal CMHT FU", "Discharged but refused perinatal CMHT", "CRHT"], section: "Category C - Emergency Referral" },
 
-    { key: "status", label: "Status", type: "select", options: ["Active", "Closed"], section: "Status" }
+    { key: "status", label: "Status", type: "select", options: ["Active", "Closed"], section: "Status" },
+
+    { key: "notes", label: "Notes", type: "textarea", section: "Notes" }
   ];
 
   var SECTIONS = [];
@@ -168,6 +170,9 @@
             html += '<option value="' + escapeHtml(opt) + '">' + escapeHtml(opt) + "</option>";
           });
           html += "</select>";
+        } else if (f.type === "textarea") {
+          html += '<textarea id="f_' + f.key + '" name="' + f.key + '" rows="4"' +
+            (f.required ? " required" : "") + "></textarea>";
         } else {
           html += '<input id="f_' + f.key + '" name="' + f.key + '" type="' + f.type + '"' +
             (f.required ? " required" : "") + ">";
@@ -266,8 +271,9 @@
   var searchInput = document.getElementById("searchInput");
   var filterTimepoint = document.getElementById("filterTimepoint");
   var filterRisk = document.getElementById("filterRisk");
+  var filterStatus = document.getElementById("filterStatus");
 
-  [searchInput, filterTimepoint, filterRisk].forEach(function (el) {
+  [searchInput, filterTimepoint, filterRisk, filterStatus].forEach(function (el) {
     el.addEventListener("input", renderRecords);
     el.addEventListener("change", renderRecords);
   });
@@ -283,10 +289,12 @@
     var q = searchInput.value.trim().toLowerCase();
     var tp = filterTimepoint.value;
     var risk = filterRisk.value;
+    var status = filterStatus.value;
 
     var filtered = entries.filter(function (e) {
       if (tp && e.timepoint !== tp) return false;
       if (risk && e.riskCategoryTriage !== risk) return false;
+      if (status && e.status !== status) return false;
       if (q) {
         var hay = [e.firstName, e.surname, e.idNumber, e.mobile, e.email].join(" ").toLowerCase();
         if (hay.indexOf(q) === -1) return false;
@@ -342,7 +350,11 @@
       if (!sectionFields.length) return;
       html += '<div class="detail-section-title">' + escapeHtml(section) + "</div>";
       sectionFields.forEach(function (f) {
-        html += '<div class="detail-row"><dt>' + escapeHtml(f.label) + "</dt><dd>" + escapeHtml(entry[f.key]) + "</dd></div>";
+        if (f.type === "textarea") {
+          html += '<div class="detail-row detail-row-block"><dt>' + escapeHtml(f.label) + '</dt><dd>' + escapeHtml(entry[f.key]) + "</dd></div>";
+        } else {
+          html += '<div class="detail-row"><dt>' + escapeHtml(f.label) + "</dt><dd>" + escapeHtml(entry[f.key]) + "</dd></div>";
+        }
       });
     });
     if (!html) html = '<div class="detail-row"><dt>No details recorded yet.</dt><dd></dd></div>';

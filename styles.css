@@ -331,6 +331,9 @@ input:focus, select:focus, textarea:focus {
 .detail-row:last-child { border-bottom: none; }
 .detail-row dt { color: var(--color-text-muted); flex: 0 0 55%; }
 .detail-row dd { margin: 0; flex: 1; text-align: right; font-weight: 500; }
+.detail-row-block { flex-direction: column; gap: .3rem; }
+.detail-row-block dt { flex: none; }
+.detail-row-block dd { text-align: left; font-weight: 400; white-space: pre-wrap; }
 .detail-section-title {
   padding: .6rem .9rem;
   font-size: .8rem;
