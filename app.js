@@ -56,6 +56,23 @@
     if (SECTIONS.indexOf(f.section) === -1) SECTIONS.push(f.section);
   });
 
+  var DATE_FIELD_KEYS = FIELDS.filter(function (f) {
+    return f.type === "date" || f.type === "datetime-local";
+  }).map(function (f) { return f.key; });
+
+  function normalizeDateQuery(q) {
+    var m = q.match(/^(\d{1,2})\/(\d{1,2})(?:\/(\d{2,4}))?$/);
+    if (!m) return null;
+    var dd = m[1].padStart(2, "0");
+    var mm = m[2].padStart(2, "0");
+    var yyyy = m[3];
+    if (yyyy) {
+      if (yyyy.length === 2) yyyy = "20" + yyyy;
+      return yyyy + "-" + mm + "-" + dd;
+    }
+    return "-" + mm + "-" + dd;
+  }
+
   // ---------- Storage ----------
 
   function loadEntries() {
@@ -325,7 +342,15 @@
       if (alertFilter && alertState(e) !== alertFilter) return false;
       if (q) {
         var hay = [e.firstName, e.surname, e.idNumber, e.mobile, e.email, e.dateOfReferral, e.followUpDate].join(" ").toLowerCase();
-        if (hay.indexOf(q) === -1) return false;
+        var textMatch = hay.indexOf(q) !== -1;
+        var dateMatch = false;
+        if (!textMatch) {
+          var dateQuery = normalizeDateQuery(q);
+          if (dateQuery) {
+            dateMatch = DATE_FIELD_KEYS.some(function (k) { return e[k] && e[k].indexOf(dateQuery) !== -1; });
+          }
+        }
+        if (!textMatch && !dateMatch) return false;
       }
       return true;
     });
