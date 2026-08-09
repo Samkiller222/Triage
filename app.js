@@ -158,17 +158,17 @@
         html += '<div class="field"><label for="f_' + f.key + '">' + escapeHtml(f.label) +
           (f.required ? ' <span class="req">*</span>' : "") + "</label>";
         if (f.type === "select") {
-          html += '<select id="f_' + f.key + '" name="' + f.key + '"' + (f.required ? " required" : "") + ">";
+          html += '<select id="f_' + f.key + '" name="' + f.key + '" autocomplete="off"' + (f.required ? " required" : "") + ">";
           html += '<option value=""></option>';
           f.options.forEach(function (opt) {
             html += '<option value="' + escapeHtml(opt) + '">' + escapeHtml(opt) + "</option>";
           });
           html += "</select>";
         } else if (f.type === "textarea") {
-          html += '<textarea id="f_' + f.key + '" name="' + f.key + '" rows="4"' +
+          html += '<textarea id="f_' + f.key + '" name="' + f.key + '" rows="4" autocomplete="off"' +
             (f.required ? " required" : "") + "></textarea>";
         } else {
-          html += '<input id="f_' + f.key + '" name="' + f.key + '" type="' + f.type + '"' +
+          html += '<input id="f_' + f.key + '" name="' + f.key + '" type="' + f.type + '" autocomplete="off"' +
             (f.required ? " required" : "") + ">";
         }
         html += "</div>";
