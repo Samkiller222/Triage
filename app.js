@@ -324,7 +324,7 @@
       if (mdt && e.requiresMDT !== mdt) return false;
       if (alertFilter && alertState(e) !== alertFilter) return false;
       if (q) {
-        var hay = [e.firstName, e.surname, e.idNumber, e.mobile, e.email].join(" ").toLowerCase();
+        var hay = [e.firstName, e.surname, e.idNumber, e.mobile, e.email, e.dateOfReferral, e.followUpDate].join(" ").toLowerCase();
         if (hay.indexOf(q) === -1) return false;
       }
       return true;
