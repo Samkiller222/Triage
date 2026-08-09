@@ -168,7 +168,8 @@
           html += '<textarea id="f_' + f.key + '" name="' + f.key + '" rows="4" autocomplete="off"' +
             (f.required ? " required" : "") + "></textarea>";
         } else {
-          html += '<input id="f_' + f.key + '" name="' + f.key + '" type="' + f.type + '" autocomplete="off"' +
+          var noAutofill = f.type === "text" || f.type === "tel" || f.type === "email";
+          html += '<input id="f_' + f.key + '" name="' + f.key + '" type="' + f.type + '" autocomplete="' + (noAutofill ? "new-password" : "off") + '"' +
             (f.required ? " required" : "") + ">";
         }
         html += "</div>";
