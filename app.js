@@ -73,6 +73,16 @@
     return "-" + mm + "-" + dd;
   }
 
+  function formatDateDisplay(value, type) {
+    if (!value) return "";
+    if (type === "datetime-local") {
+      var parts = value.split("T");
+      return formatDateDisplay(parts[0]) + (parts[1] ? " " + parts[1] : "");
+    }
+    var m = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    return m ? m[3] + "/" + m[2] + "/" + m[1] : value;
+  }
+
   // ---------- Storage ----------
 
   function loadEntries() {
@@ -309,7 +319,7 @@
       var html = '<div class="notice-box ' + cls + '"><div class="notice-title">' + escapeHtml(title) + " (" + list.length + ")</div>";
       list.forEach(function (e) {
         var name = escapeHtml(((e.firstName || "") + " " + (e.surname || "")).trim() || "(no name)");
-        html += '<button type="button" class="notice-item" data-id="' + e.id + '"><span>' + name + '</span><span class="notice-date">' + escapeHtml(e.followUpDate) + "</span></button>";
+        html += '<button type="button" class="notice-item" data-id="' + e.id + '"><span>' + name + '</span><span class="notice-date">' + escapeHtml(formatDateDisplay(e.followUpDate)) + "</span></button>";
       });
       html += "</div>";
       return html;
@@ -377,7 +387,7 @@
       else if (alertSt === "dueToday") chips += '<span class="chip alert-due-today">Due today</span>';
       return '<div class="record-card" data-id="' + e.id + '">' +
         '<div class="record-card-top"><span class="record-card-name">' + name + '</span>' +
-        '<span class="record-card-date">' + escapeHtml(e.dateOfReferral || "") + "</span></div>" +
+        '<span class="record-card-date">' + escapeHtml(formatDateDisplay(e.dateOfReferral)) + "</span></div>" +
         '<div class="record-card-meta">' + chips + "</div>" +
         "</div>";
     }).join("");
@@ -409,7 +419,8 @@
         if (f.type === "textarea") {
           html += '<div class="detail-row detail-row-block"><dt>' + escapeHtml(f.label) + '</dt><dd>' + escapeHtml(entry[f.key]) + "</dd></div>";
         } else {
-          html += '<div class="detail-row"><dt>' + escapeHtml(f.label) + "</dt><dd>" + escapeHtml(entry[f.key]) + "</dd></div>";
+          var displayValue = (f.type === "date" || f.type === "datetime-local") ? formatDateDisplay(entry[f.key], f.type) : entry[f.key];
+          html += '<div class="detail-row"><dt>' + escapeHtml(f.label) + "</dt><dd>" + escapeHtml(displayValue) + "</dd></div>";
         }
       });
     });
