@@ -27,12 +27,15 @@
     <li><button class="nav-link" data-view="records">📋 View Records</button></li>
     <li><button class="nav-link" data-view="form">📝 New Entry</button></li>
     <li class="nav-divider"></li>
+    <li><button id="linkFileBtn" class="nav-link hidden">🔗 Link to a File</button></li>
+    <li><button id="unlinkFileBtn" class="nav-link hidden">🔓 Unlink File</button></li>
+    <li class="nav-divider hidden" id="fileLinkDivider"></li>
     <li><button id="exportCsvBtn" class="nav-link">⬇️ Export as CSV</button></li>
     <li><button id="exportXlsxBtn" class="nav-link">⬇️ Export as Excel (.xlsx)</button></li>
     <li class="nav-divider"></li>
     <li><button id="clearDataBtn" class="nav-link danger">🗑️ Clear All Data</button></li>
   </ul>
-  <p class="side-nav-footer">Data is stored only on this device.</p>
+  <p class="side-nav-footer" id="dataStorageNote">Data is stored only on this device.</p>
 </nav>
 
 <main id="app">

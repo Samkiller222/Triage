@@ -4,10 +4,9 @@ A mobile-friendly web app for filling out and amending perinatal triage records,
 
 ## Features
 
-- **New Entry** form covering every column from the original spreadsheet (referral details, Whooley/EPDS/GAD-7/RDAS scores, triage outcome, and Category A/B/C follow-up), plus a Status (Active/Closed), Notes, and Follow-up Date field.
-- **Category A/B/C sections** show or hide automatically based on the selected "Risk Category after Triage".
+- **New Entry** form covering every column from the original spreadsheet (referral details, Whooley/EPDS/GAD-7/RDAS scores, triage outcome, and Category A/B/C follow-up, all always visible), plus a Status (Active/Closed), Notes, and Follow-up Date field.
 - **Burger menu** for navigating between viewing records and adding a new entry.
-- **Records list** with search (name, surname, ID, mobile, email) and filters (perinatal timepoint, risk category, status, Requires MDT Discussion, alert date). Tap a record to see the full detail view.
+- **Records list** with search (name, surname, ID, mobile, email, and dates in `YYYY-MM-DD` or `DD/MM/YYYY` format) and filters (perinatal timepoint, risk category, status, Requires MDT Discussion, alert date). Tap a record to see the full detail view.
 - **Follow-up alerts** — records whose Follow-up Date is today or in the past (and not Closed) surface as clickable "Due today" / "Overdue" notifications at the top of the records list, taking you straight to that record.
 - **Amend** any record after the fact — useful since follow-up calls, MDT discussions, and AE referrals happen days after the initial triage.
 - **Export** all records as CSV (always available) or Excel `.xlsx` (requires an internet connection to load the export library).
@@ -15,13 +14,26 @@ A mobile-friendly web app for filling out and amending perinatal triage records,
 
 ## Data storage
 
-All data is stored locally in the browser's `localStorage` — nothing is sent to a server. This means:
+By default, all data is stored locally in the browser's `localStorage` — nothing is sent to a server. This means:
 
 - Data persists across page reloads and browser restarts on the same device/browser.
 - Data does **not** sync between devices or browsers.
 - Clearing browser data/site data will erase all stored entries.
 
-This is intended as a "device memory" first version; a shared/synced backend can be added later without changing the form itself.
+### Optional: link to a local file
+
+On Chrome or Edge (desktop), the burger menu offers **Link to a File**. This uses the browser's File System
+Access API to read and write a real `.json` file on disk — the exact same file, whether the app is running
+locally (`http://localhost`) or from the hosted GitHub Pages site (both count as a "secure context"). After
+linking:
+
+- Every save, edit, or delete also writes the full record set to that file.
+- Reopening the app tries to reconnect to the same file automatically (you may need to tap **Link to a File**
+  again once per browser session to re-grant permission).
+- **Unlink File** switches back to device-only storage.
+
+This feature isn't available in Firefox, Safari, or mobile browsers — the menu option only appears when the
+browser supports it.
 
 ## Running locally
 

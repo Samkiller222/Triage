@@ -97,11 +97,151 @@
 
   function saveEntries(entries) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+    if (fileHandle) writeEntriesToFile();
   }
 
   var entries = loadEntries();
   var editingId = null;
   var currentDetailId = null;
+
+  // ---------- Linked file (File System Access API) ----------
+
+  var fileSupported = "showSaveFilePicker" in window;
+  var fileHandle = null;
+  var FS_DB_NAME = "triageFileLink";
+  var FS_STORE = "handles";
+  var FS_KEY = "entriesFile";
+
+  function idbOpen() {
+    return new Promise(function (resolve, reject) {
+      var req = indexedDB.open(FS_DB_NAME, 1);
+      req.onupgradeneeded = function () { req.result.createObjectStore(FS_STORE); };
+      req.onsuccess = function () { resolve(req.result); };
+      req.onerror = function () { reject(req.error); };
+    });
+  }
+  function idbGet(key) {
+    return idbOpen().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var req = db.transaction(FS_STORE, "readonly").objectStore(FS_STORE).get(key);
+        req.onsuccess = function () { resolve(req.result || null); };
+        req.onerror = function () { reject(req.error); };
+      });
+    });
+  }
+  function idbSet(key, val) {
+    return idbOpen().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(FS_STORE, "readwrite");
+        tx.objectStore(FS_STORE).put(val, key);
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+  function idbDelete(key) {
+    return idbOpen().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(FS_STORE, "readwrite");
+        tx.objectStore(FS_STORE).delete(key);
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+
+  var linkFileBtn = document.getElementById("linkFileBtn");
+  var unlinkFileBtn = document.getElementById("unlinkFileBtn");
+  var fileLinkDivider = document.getElementById("fileLinkDivider");
+  var dataStorageNote = document.getElementById("dataStorageNote");
+
+  function updateFileStatus() {
+    linkFileBtn.classList.toggle("hidden", !fileSupported || !!fileHandle);
+    unlinkFileBtn.classList.toggle("hidden", !fileSupported || !fileHandle);
+    fileLinkDivider.classList.toggle("hidden", !fileSupported);
+    dataStorageNote.textContent = fileHandle
+      ? "Linked to " + fileHandle.name + " — saved to this file and to your device."
+      : "Data is stored only on this device.";
+  }
+
+  async function writeEntriesToFile() {
+    try {
+      var writable = await fileHandle.createWritable();
+      await writable.write(JSON.stringify(entries, null, 2));
+      await writable.close();
+    } catch (err) {
+      console.error("Failed writing to linked file", err);
+      toast("Could not save to linked file.");
+    }
+  }
+
+  async function loadFromLinkedFile() {
+    try {
+      var file = await fileHandle.getFile();
+      var text = await file.text();
+      if (text && text.trim()) {
+        var parsed = JSON.parse(text);
+        if (Array.isArray(parsed)) {
+          entries = parsed;
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+          toast("Loaded " + entries.length + " record(s) from " + fileHandle.name + ".");
+        }
+      } else {
+        await writeEntriesToFile();
+      }
+    } catch (err) {
+      console.error("Failed reading linked file", err);
+      toast("Could not read linked file.");
+    }
+    renderRecords();
+  }
+
+  async function linkFile() {
+    if (!fileSupported) return;
+    closeNav();
+    try {
+      var handle = await window.showSaveFilePicker({
+        suggestedName: "triage-data.json",
+        types: [{ description: "JSON File", accept: { "application/json": [".json"] } }]
+      });
+      fileHandle = handle;
+      await idbSet(FS_KEY, handle);
+      updateFileStatus();
+      await loadFromLinkedFile();
+    } catch (err) {
+      if (err.name !== "AbortError") toast("Could not link file.");
+    }
+  }
+
+  async function unlinkFile() {
+    closeNav();
+    fileHandle = null;
+    await idbDelete(FS_KEY);
+    updateFileStatus();
+    toast("File unlinked. Using device storage only.");
+  }
+
+  async function initFileLink() {
+    if (!fileSupported) return;
+    try {
+      var handle = await idbGet(FS_KEY);
+      if (!handle) return;
+      var perm = await handle.queryPermission({ mode: "readwrite" });
+      if (perm === "granted") {
+        fileHandle = handle;
+        updateFileStatus();
+        await loadFromLinkedFile();
+      } else {
+        toast('Tap "Link to a File" to reconnect ' + handle.name + ".");
+      }
+    } catch (err) {
+      console.error("Failed to restore file link", err);
+    }
+  }
+
+  if (linkFileBtn) linkFileBtn.addEventListener("click", linkFile);
+  if (unlinkFileBtn) unlinkFileBtn.addEventListener("click", unlinkFile);
+  updateFileStatus();
 
   function uid() {
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
@@ -529,4 +669,5 @@
 
   renderRecords();
   showView("records");
+  initFileLink();
 })();
