@@ -12,7 +12,7 @@
     { key: "idNumber", label: "ID", type: "text", section: "Referral Details" },
     { key: "mobile", label: "Mobile", type: "tel", section: "Referral Details" },
     { key: "email", label: "Email", type: "email", section: "Referral Details" },
-    { key: "residence", label: "Residence", type: "select", options: ["Malta", "Gozo"], section: "Referral Details" },
+    { key: "residence", label: "Residence", type: "text", section: "Referral Details" },
     { key: "timepoint", label: "Perinatal Timepoint of Referral", type: "select", options: ["T1", "T2", "T3", "T4", "T5"], section: "Referral Details" },
 
     { key: "whooley1", label: "Whooley Q1", type: "select", options: ["Positive", "Negative"], section: "Screening Scores" },
